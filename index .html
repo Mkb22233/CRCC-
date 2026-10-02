@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#16225a">
+<title>CRCC Digital Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#16225a; --indigo-deep:#0e1744; --crimson:#b3243f; --turmeric:#eaa91f; --teal:#1b766e;
+  --paper:#eef0f5; --panel:#ffffff; --ink:#171c36; --muted:#5b6283; --line:#dde0ea;
+  --display:"Bricolage Grotesque","Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);display:flex;flex-direction:column;height:100dvh;overflow:hidden;-webkit-tap-highlight-color:transparent}
+
+/* Masthead */
+.masthead{background:var(--indigo);color:#fff;padding-top:env(safe-area-inset-top,0px);flex-shrink:0}
+.bar{display:flex;align-items:center;gap:12px;padding:12px 16px;min-height:56px}
+.mark{width:32px;height:32px;border-radius:9px;background:var(--turmeric);color:var(--indigo-deep);display:grid;place-items:center;font:800 0.95rem var(--display);flex-shrink:0}
+.bar-title{font:700 1.05rem var(--display);letter-spacing:.01em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back-btn{display:none;align-items:center;gap:6px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;font:600 .9rem var(--body);padding:8px 14px 8px 10px;border-radius:999px;cursor:pointer}
+.back-btn:hover{background:rgba(255,255,255,.22)}
+.in-app .back-btn{display:inline-flex}
+.in-app .mark{display:none}
+.ikat{height:10px;background-color:var(--indigo-deep);
+  background-image:
+   linear-gradient(135deg,var(--turmeric) 25%,transparent 25%),
+   linear-gradient(225deg,var(--turmeric) 25%,transparent 25%),
+   linear-gradient(315deg,var(--crimson) 25%,transparent 25%),
+   linear-gradient(45deg,var(--crimson) 25%,transparent 25%);
+  background-size:20px 10px;background-position:-10px 0,-10px 0,0 0,0 0}
+
+.hero{padding:10px 16px 22px;max-width:1040px;margin:0 auto}
+.in-app .hero{display:none}
+.hero h1{margin:0;font:800 clamp(1.7rem,6.5vw,2.6rem)/1.05 var(--display);letter-spacing:-.02em}
+.hero p{margin:8px 0 18px;color:#c3c9ea;font-size:.95rem}
+.search{position:relative;max-width:520px}
+.search input{width:100%;font:500 1rem var(--body);color:var(--ink);background:#fff;border:2px solid transparent;border-radius:14px;padding:13px 16px 13px 44px;outline:none}
+.search input::placeholder{color:#8a90ab}
+.search input:focus{border-color:var(--turmeric)}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+
+/* Home */
+.dashboard{flex:1;overflow-y:auto;padding:18px 16px calc(28px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
+.groups{max-width:1040px;margin:0 auto;display:grid;gap:18px;grid-template-columns:1fr;align-items:start}
+@media(min-width:760px){.groups{grid-template-columns:1fr 1fr}.group.wide{grid-column:1/-1}.group.wide .list{display:grid;grid-template-columns:1fr 1fr}}
+.group{--g:var(--indigo);--g-soft:#e6e9f7;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.group.field{--g:var(--crimson);--g-soft:#f8e4e8}
+.group.records{--g:var(--indigo);--g-soft:#e3e7f8}
+.group.docs{--g:var(--teal);--g-soft:#dcf0ed}
+.group-head{display:flex;align-items:baseline;gap:10px;padding:14px 18px 10px;border-top:4px solid var(--g)}
+.group-head h2{margin:0;font:700 1.1rem var(--display);color:var(--ink)}
+.group-head span{font-size:.85rem;color:var(--muted)}
+.list{display:block}
+.tool{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;width:100%;padding:12px 18px;cursor:pointer;border-top:1px solid var(--line)}
+.group.wide .list .tool:nth-child(2){border-top:1px solid var(--line)}
+.tool:hover{background:#f7f8fc}
+.tool:active{background:var(--g-soft)}
+.tool:focus-visible{outline:3px solid var(--turmeric);outline-offset:-3px}
+.tile{width:46px;height:46px;border-radius:13px;background:var(--g-soft);display:grid;place-items:center;font-size:1.4rem;flex-shrink:0}
+.txt{flex:1;min-width:0;display:block}
+.txt b{display:block;font:700 1rem var(--display);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txt small{display:block;margin-top:2px;font-size:.84rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{width:18px;height:18px;stroke:#a3a9c0;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.empty{display:none;max-width:520px;margin:30px auto;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font:700 1.1rem var(--display);margin-bottom:4px}
+
+/* App view */
+#app-frame{width:100%;border:none;display:none;flex:1;background:#fff}
+.in-app #app-frame{display:block}
+.in-app .dashboard{display:none}
+.hidden-data{display:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="bar">
+    <button id="back-btn" class="back-btn" type="button" aria-label="Back to home">
+      <svg class="chev" style="stroke:#fff;transform:rotate(180deg)" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Home
+    </button>
+    <div class="mark" aria-hidden="true">C</div>
+    <div class="bar-title" id="header-title">CRCC Workspace</div>
+  </div>
+  <div class="hero">
+    <h1>Anlakuda Cluster workspace</h1>
+    <p id="today">Suliapada Block, Mayurbhanj</p>
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="Search tools, e.g. diary, budget" autocomplete="off" aria-label="Search tools">
+    </label>
+  </div>
+  <div class="ikat" aria-hidden="true"></div>
+</div>
+
+<main class="dashboard" id="dashboard">
+  <div class="groups">
+
+    <section class="group field">
+      <div class="group-head"><h2>Field visits</h2><span>Plan, log and submit tours</span></div>
+      <div class="list">
+        <button class="tool" type="button" data-app="app-blo" data-title="BLO Messaging Center" data-k="blo booth messaging whatsapp voter">
+          <span class="tile">👥</span><span class="txt"><b>BLO Manager</b><small>Booths 08–17 database</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-tentative-diary" data-title="Tentative Tour Diary" data-k="smart tour diary plan schedule tentative">
+          <span class="tile">📅</span><span class="txt"><b>Smart Tour Diary</b><small>Plan and generate schedules</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-pro-diary" data-title="Monitoring Tour Diary" data-k="pro tour diary observation monitoring">
+          <span class="tile">📋</span><span class="txt"><b>Pro Tour Diary</b><small>Advanced observation logging</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-final-diary" data-title="Tour Diary Entry" data-k="final tour diary entry pdf export">
+          <span class="tile">📝</span><span class="txt"><b>Final Tour Diary</b><small>Daily entry and PDF export</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="group records">
+      <div class="group-head"><h2>Reports and records</h2><span>Money, health and live data</span></div>
+      <div class="list">
+        <button class="tool" type="button" data-app="app-budget" data-title="Budget Manager" data-k="digi gov budget allocation withdrawal money">
+          <span class="tile">💰</span><span class="txt"><b>Digi GOV Budget</b><small>Track allocations and withdrawals</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-ifa" data-title="Format 4A Monthly Report" data-k="ifa format 4a health albendazole report">
+          <span class="tile">📊</span><span class="txt"><b>IFA / Format 4A</b><small>Health and Albendazole tracking</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-live-db" data-title="Smart School Report" data-k="live cluster data school report export filter">
+          <span class="tile">🏫</span><span class="txt"><b>Live Cluster Data</b><small>Filter and export live reports</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-live-diary" data-title="Google Data Portal" data-k="embedded data google sheets forms">
+          <span class="tile">🔄</span><span class="txt"><b>Embedded Data</b><small>Live Sheets and Forms</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="group docs wide">
+      <div class="group-head"><h2>Letters and notices</h2><span>Ready to edit and print</span></div>
+      <div class="list">
+        <button class="tool" type="button" data-app="app-letter" data-title="Official Letterhead" data-k="letterhead letter official dispatch">
+          <span class="tile">✉️</span><span class="txt"><b>Letterhead</b><small>Editable official dispatch</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="tool" type="button" data-app="app-notice" data-title="Notice Editor" data-k="notice editor odia signature">
+          <span class="tile">📢</span><span class="txt"><b>Notice Editor</b><small>Odia notices with signature</small></span>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+  </div>
+  <div class="empty" id="empty"><b>No tool matches that search</b>Try a shorter word, like "diary" or "report".</div>
+</main>
+
+    <iframe id="app-frame"></iframe>
+
+    <!-- ========================================== -->
+    <!-- SECURE DATA STORAGE FOR ALL EMBEDDED APPS  -->
+    <!-- ========================================== -->
+
+<textarea id="app-blo" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suliapada BLO Manager (Booths 08-17)</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e5ddd5; margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 12px; }
+        h1 { color: #075e54; text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 25px; }
+        .control-panel { background-color: #f0f2f5; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
+        textarea { width: 100%; height: 60px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; resize: vertical; margin-bottom: 10px; box-sizing: border-box; }
+        .action-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+        .right-buttons { display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-copy { background-color: #607d8b; color: white; }
+        .btn-pdf { background-color: #d32f2f; color: white; }
+        .btn-excel { background-color: #1d6f42; color: white; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+        th { background-color: #075e54; color: white; white-space: nowrap; }
+        tr:hover { background-color: #f1f1f1; }
+        .btn-wa { background-color: #25D366; color: white; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; text-decoration: none; border: none; cursor: pointer; }
+        .stats-col { background-color: #f0fcf3; text-align: center; color: #075e54; font-weight: 500; }
+        .pending-high { color: #d32f2f; font-weight: bold; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+<div class="container" id="mainContent">
+    <h1>BLO Messaging Center</h1>
+    <p class="subtitle">Booths 08–17 | Suliapada Block</p>
+    <div class="control-panel no-print" data-html2canvas-ignore="true">
+        <label for="msgInput"><strong>Step 1: Type Message for BLOs</strong></label>
+        <textarea id="msgInput" placeholder="Ex: Dear BLO, please update your pending electors list.">Dear BLO, please update your pending electors list immediately.&lt;/textarea&gt;
+        <div class="action-bar">
+            <button class="btn btn-copy" onclick="copyNumbers()">📄 Copy All Numbers</button>
+            <div class="right-buttons">
+                <button class="btn btn-pdf" onclick="downloadPDF()">⬇️ Download PDF</button>
+                <button class="btn btn-excel" onclick="downloadExcel()">📊 Download Excel</button>
+            </div>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table id="bloTable">
+            <thead>
+                <tr>
+                    <th>Part No.</th><th>BLO Name</th><th>Mobile</th><th class="stats-header">Performance</th><th class="stats-header">Pending</th><th class="no-print">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<script>
+    const bloData = [
+        {part: 8, name: "Bibrat Ku. Das", mobile: "9437744969", perf: "78.08%", pending: 237},
+        {part: 9, name: "SATYABAN SENAPATI", mobile: "9178015294", perf: "85.69%", pending: 190},
+        {part: 10, name: "SAPAN KUMAR DHAL", mobile: "7504507499", perf: "86.14%", pending: 161},
+        {part: 11, name: "Ajit Narayan Bhanjdeo", mobile: "8917445215", perf: "87.71%", pending: 87},
+        {part: 12, name: "MADHUSUDAN RANA", mobile: "9337450754", perf: "88.31%", pending: 92},
+        {part: 13, name: "SANTOSH KUMAR SETHI", mobile: "9692038149", perf: "75.19%", pending: 265},
+        {part: 14, name: "Niranjan Tipiria", mobile: "9938985324", perf: "92.43%", pending: 69},
+        {part: 15, name: "Jata Hansdah", mobile: "9668575732", perf: "89.27%", pending: 82},
+        {part: 16, name: "Susil Ku. Soren", mobile: "8249102148", perf: "79.36%", pending: 141},
+        {part: 17, name: "Basanta Kumar Si", mobile: "9777190880", perf: "68.88%", pending: 234}
+    ];
+    const tableBody = document.querySelector("#bloTable tbody");
+    bloData.forEach(blo => {
+        const tr = document.createElement("tr");
+        const pendingClass = blo.pending > 100 ? "pending-high" : "";
+        tr.innerHTML = `<td><strong>${blo.part}</strong></td><td>${blo.name}</td><td>${blo.mobile}</td><td class="stats-col">${blo.perf}</td><td class="stats-col ${pendingClass}">${blo.pending}</td><td class="no-print"><button class="btn-wa" onclick="sendOne('${blo.mobile}')">WhatsApp</button></td>`;
+        tableBody.appendChild(tr);
+    });
+    function downloadPDF() { html2pdf().set({ margin: 0.5, filename: 'BLO_List.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' } }).from(document.getElementById('mainContent')).save(); }
+    function downloadExcel() { const wb = XLSX.utils.book_new(); const ws = XLSX.utils.table_to_sheet(document.getElementById('bloTable')); XLSX.utils.book_append_sheet(wb, ws, "BLO List"); XLSX.writeFile(wb, 'BLO_List.xlsx'); }
+    function sendOne(mobile) { const message = document.getElementById("msgInput").value; let cleanMobile = mobile.replace(/\D/g, ''); if(cleanMobile.length === 10) cleanMobile = '91' + cleanMobile; window.open(`https://wa.me/${cleanMobile}?text=${encodeURIComponent(message)}`, '_blank'); }
+    function copyNumbers() { navigator.clipboard.writeText(bloData.map(b => b.mobile).join(",")).then(() => alert("Copied " + bloData.length + " numbers!")); }
+</script>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-tentative-diary" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Tour Diary - Custom Name</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f5; margin: 20px; color: #333; }
+        .controls { background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto 20px auto; text-align: center; display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap; }
+        .controls input, .controls select, .controls button { padding: 10px 15px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
+        .controls input { width: 250px; }
+        button.download-btn { background-color: #d32f2f; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .paper { background-color: white; padding: 40px; max-width: 800px; margin: 0 auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); min-height: 1000px; }
+        h2, h3, h4 { text-align: center; margin: 5px 0; text-transform: uppercase; color: #000; }
+        .header-info { margin-top: 20px; margin-bottom: 20px; font-size: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+        th, td { border: 1px solid black; padding: 6px; text-align: left; vertical-align: middle; }
+        th { background-color: #f2f2f2; text-align: center; font-weight: bold; }
+        tr.holiday-row { background-color: #ffeaea !important; color: #d32f2f; font-weight: bold; }
+        [contenteditable]:hover { background-color: #fff8dc; outline: 1px dashed #999; cursor: text; }
+        .footer { margin-top: 40px; display: flex; justify-content: space-between; page-break-inside: avoid; }
+        .signature-box { text-align: center; width: 250px; }
+        @media print { body { background-color: white; margin: 0; } .controls { display: none; } .paper { box-shadow: none; padding: 0; width: 100%; max-width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <input type="text" id="crccInput" value="Mohan Kumar Behera" oninput="updateName()">
+        <select id="selectMonth" onchange="generateDiary()">
+            <option value="0">January</option><option value="1" selected>February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+        </select>
+        <button class="download-btn" onclick="downloadPDF()">⬇️ Download PDF</button>
+        <p style="width:100%; margin-top:5px; font-size:0.9em; color:#666;">✨ <strong>Tip:</strong> Double-click rows to toggle Holiday Red/White.</p>
+    </div>
+    <div class="paper" id="diaryContent">
+        <h3>Office of the Cluster Resource Centre Coordinator</h3>
+        <h4>Cluster: Anlakuda, Block: Suliapada</h4>
+        <h4>District: Mayurbhanj</h4><br>
+        <h2 style="text-decoration: underline;">Tentative Tour Diary</h2>
+        <div class="header-info"><div style="display:flex; justify-content:space-between;"><span><strong>Name:</strong> <span id="displayName">Mohan Kumar Behera</span> (CRCC)</span><span id="displayDate"><strong>Month:</strong> February 2026</span></div></div>
+        <table><thead><tr><th width="10%">Date</th><th width="12%">Day</th><th>Name of School / Place of Visit</th><th>Purpose of Visit / Activity</th></tr></thead><tbody id="diaryBody"></tbody></table>
+        <div class="footer"><div class="signature-box"><p><strong>Submitted to:</strong></p><br><p>The Block Education Officer,<br>Suliapada Block.</p></div><div class="signature-box"><br><br><p>_______________________<br><strong>(<span id="displaySignatureName">Mohan Kumar Behera</span>)</strong><br>CRCC, Anlakuda</p></div></div>
+    </div>
+    <script>
+        const schools = ["Govt PS Nedhua", "Govt UPS Bhaduasole", "Govt PS Pathara", "Govt PS Dhadangri", "Govt PS Anlakuda", "Govt UPS Anlakuda", "Govt PS Nadigan", "Govt UPS Kusumasole", "GOVT UPS Rangamatia", "Govt PS Dhobanisole", "Govt PS Dhadasahi", "Govt UPS Nagsole", "Govt PS Bangriposi"];
+        const secondaryPurposes = ["Checking Student Note Book", "MDM Inspection & Tasting", "Checking FLN Progress", "Infrastructure Check", "Parent Teacher Meeting"];
+        const odishaHolidays2026 = {"0-14": "Makar Sankranti", "0-26": "Republic Day", "2-4": "Holi", "3-1": "Utkal Divas", "7-15": "Independence Day", "9-2": "Gandhi Jayanti", "11-25": "X-Mas Day"};
+        function updateName() { const n = document.getElementById("crccInput").value; document.getElementById("displayName").innerText = n; document.getElementById("displaySignatureName").innerText = n; }
+        function generateDiary() {
+            const m = parseInt(document.getElementById('selectMonth').value); const tbody = document.getElementById('diaryBody'); tbody.innerHTML = "";
+            document.getElementById('displayDate').innerHTML = `<strong>Month:</strong> ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][m]} 2026`;
+            let sIdx = 0, spIdx = 0, satCount = 0;
+            for (let day = 1; day <= new Date(2026, m + 1, 0).getDate(); day++) {
+                const dObj = new Date(2026, m, day); const dayName = dObj.toLocaleDateString('en-US', { weekday: 'long' });
+                const dateStr = `${String(day).padStart(2, '0')}.${String(m + 1).padStart(2, '0')}.26`;
+                let sName = "", purp = "", rowCls = "";
+                if (odishaHolidays2026[`${m}-${day}`]) { sName = odishaHolidays2026[`${m}-${day}`].toUpperCase(); purp = "Public Holiday"; rowCls = "holiday-row"; if (dayName === "Saturday") satCount++; }
+                else if (dayName === "Sunday") { sName = "SUNDAY"; purp = "Public Holiday"; rowCls = "holiday-row"; }
+                else if (dayName === "Saturday") { satCount++; if (satCount === 2 || satCount === 4) { sName = "Headquarters / Office"; purp = satCount === 2 ? "Second Saturday" : "Month End Meeting"; rowCls = satCount === 2 ? "holiday-row" : ""; } else { sName = schools[sIdx % schools.length]; purp = sIdx < 13 ? "Classroom Observation" : secondaryPurposes[spIdx++ % secondaryPurposes.length]; sIdx++; } }
+                else { sName = schools[sIdx % schools.length]; purp = sIdx < 13 ? "Classroom Observation" : secondaryPurposes[spIdx++ % secondaryPurposes.length]; sIdx++; }
+                const tr = document.createElement('tr'); if (rowCls) tr.className = rowCls;
+                tr.ondblclick = function() { this.classList.toggle('holiday-row'); };
+                tr.innerHTML = `<td>${dateStr}</td><td>${dayName}</td><td contenteditable="true">${sName}</td><td contenteditable="true">${purp}</td>`; tbody.appendChild(tr);
+            }
+        }
+        function downloadPDF() { html2pdf().set({ margin: 10, filename: `Tour_Diary.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(document.getElementById('diaryContent')).save(); }
+        window.onload = function() { generateDiary(); updateName(); };
+    </script>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-pro-diary" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRCC Monitoring Tour Diary</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+body{font-family: Arial, sans-serif; background:#eef2f5; margin:20px;}
+.controls{background:white; padding:15px; text-align:center; border-radius:8px; margin-bottom:20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;}
+.controls input, .controls select, .controls button{padding:8px 12px; font-size:14px; border: 1px solid #ccc; border-radius: 4px;}
+.download-btn{background:#d32f2f; color:white; border:none; cursor:pointer; font-weight: bold;}
+.paper{background:white; padding:40px; max-width:1100px; margin:auto; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+h2,h3,h4{text-align:center; margin:5px 0;}
+table{width:100%; border-collapse:collapse; font-size:12px;} th,td{border:1px solid black; padding:6px;} th{background:#f2f2f2;}
+.footer{margin-top:40px; display:flex; justify-content:space-between;}
+</style>
+</head>
+<body>
+<div class="controls">
+    <input type="text" id="crccInput" value="Mohan Kumar Behera" oninput="updateName()">
+    <select id="selectYear" onchange="generateDiary()"></select>
+    <select id="selectMonth" onchange="generateDiary()">
+        <option value="0">Jan</option><option value="1" selected>Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+    </select>
+    <button class="download-btn" onclick="downloadPDF()">Download PDF</button>
+</div>
+<div class="paper" id="diaryContent">
+<h3>Office of the Cluster Resource Centre Coordinator</h3>
+<h4>Cluster: Anlakuda | Block: Suliapada | District: Mayurbhanj</h4>
+<h2 style="text-decoration:underline;">Monitoring Tour Diary</h2>
+<p><strong>Name:</strong> <span id="displayName">Mohan Kumar Behera</span> (CRCC)</p>
+<p id="displayDate"><strong>Month:</strong></p>
+<table><thead><tr><th width="10%">Date</th><th width="10%">Day</th><th width="22%">School / Place</th><th width="18%">Purpose</th><th>Monitoring Notes / Observations</th></tr></thead><tbody id="diaryBody"></tbody></table>
+<div class="footer"><div>Submitted To:<br>BEO Suliapada</div><div>_____________________<br>(<span id="displaySignatureName">Mohan Kumar Behera</span>)<br>CRCC, Anlakuda</div></div>
+</div>
+<script>
+const schools = ["GOVT PS ANLAKUDA", "GOVT UPS ANLAKUDA", "GOVT PS BANGRIPOSI", "GOVT UPS BHADUASOLE", "HOLIDAY / SUNDAY"];
+const purposes = ["Academic Monitoring", "MDM Supervision", "Holiday", "Sunday"];
+const observations = ["Classroom transaction found effective.", "MDM quality checked.", "School closed - Sunday."];
+function setupYearDropdown() { const sel = document.getElementById("selectYear"); for(let i=2020; i<=2030; i++) sel.innerHTML += `<option value="${i}" ${i===2026?'selected':''}>${i}</option>`; }
+function updateName(){ let n=document.getElementById("crccInput").value; document.getElementById("displayName").innerText=n; document.getElementById("displaySignatureName").innerText=n; }
+function generateDiary(){
+    const m=parseInt(document.getElementById("selectMonth").value), y=parseInt(document.getElementById("selectYear").value);
+    document.getElementById("displayDate").innerHTML=`<strong>Month:</strong> ${["January","February","March","April","May","June","July","August","September","October","November","December"][m]} ${y}`;
+    const tbody=document.getElementById("diaryBody"); tbody.innerHTML="";
+    for(let d=1; d<=new Date(y, m+1, 0).getDate(); d++){
+        const dObj=new Date(y, m, d), dName=dObj.toLocaleDateString("en-US",{weekday:"long"});
+        const tr=document.createElement("tr");
+        tr.innerHTML=`<td>${d}.${m+1}.${y}</td><td>${dName}</td>
+        <td><select style="width:100%; border:none;"><option>-- Select --</option>${schools.map(s=>`<option ${dName==='Sunday'&&s==='HOLIDAY / SUNDAY'?'selected':''}>${s}</option>`).join("")}</select></td>
+        <td><select style="width:100%; border:none;"><option>-- Select --</option>${purposes.map(p=>`<option ${dName==='Sunday'&&p==='Sunday'?'selected':''}>${p}</option>`).join("")}</select></td>
+        <td><div contenteditable="true" style="min-height:20px;">${dName==='Sunday'?'School closed - Sunday.':''}</div></td>`;
+        tbody.appendChild(tr);
+    }
+}
+function downloadPDF(){ html2pdf().set({margin:5, html2canvas:{scale:2}, jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(document.getElementById("diaryContent")).save(); }
+window.onload=function(){ setupYearDropdown(); generateDiary(); updateName(); };
+</script>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-budget" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Budget Manager - Full Data</title>
+    <style>
+        :root { --primary: #1a73e8; --secondary: #6c757d; --danger: #d93025; --success: #188038; --warning: #f29900; --dark: #202124; }
+        body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background-color: #f1f3f4; color: var(--dark); padding-bottom: 80px; }
+        .container { padding: 12px; }
+        .header { background: white; padding: 15px; border-bottom: 1px solid #dadce0; margin-bottom: 10px; }
+        h2 { font-size: 1.2rem; margin: 0 0 10px 0; color: var(--primary); }
+        .search-box { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 24px; font-size: 1rem; box-sizing: border-box; margin-bottom: 12px; outline: none; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { padding: 10px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; color:white; }
+        .btn-add { background: var(--primary); grid-column: span 2; }
+        .btn-edit { background: var(--warning); } .btn-save { background: var(--success); display: none; } .btn-export { background: var(--secondary); }
+        .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid #dadce0; }
+        .card-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .card-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 8px; }
+        .val-label { font-size: 0.7rem; color: #70757a; text-transform: uppercase; }
+        .val-amt { font-size: 0.9rem; font-weight: 600; }
+        .edit-ui { display: none; } .editing .view-ui { display: none; } .editing .edit-ui { display: block; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 8px; border: 1px solid var(--primary); border-radius: 4px; box-sizing: border-box; margin-top: 4px; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: var(--dark); color: white; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
+        .foot-item span { font-size: 0.7rem; color: #bdc1c6; display: block; } .foot-item b { font-size: 1rem; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>Budget Manager</h2>
+    <input type="text" id="searchInput" class="search-box" placeholder="Search components or codes..." onkeyup="render()">
+    <div class="btn-grid">
+        <button class="btn btn-add" onclick="addNew()">+ Add New</button>
+        <button class="btn btn-export" onclick="exportData()">CSV</button>
+        <button class="btn btn-edit" id="editBtn" onclick="toggleEdit(true)">Edit</button>
+        <button class="btn btn-save" id="saveBtn" onclick="toggleEdit(false)">Save</button>
+    </div>
+</div>
+<div class="container" id="cardList"></div>
+<div class="footer">
+    <div class="foot-item"><span>Allocated</span><b id="totAlloc">0</b></div>
+    <div class="foot-item"><span>Withdraw</span><b id="totWith">0</b></div>
+    <div class="foot-item"><span>Balance</span><b id="totBal">0</b></div>
+</div>
+<script>
+    let budgetData = [
+        { code: "5.9.4.2.21", name: "SURAVI Programme", alloc: 5000, with: 5000 },
+        { code: "5.9.12.3.1", name: "CRC-Contingency Grant", alloc: 10000, with: 10000 },
+        { code: "5.9.12.3.2", name: "CRC-Meeting, TA", alloc: 12000, with: 8000 }
+    ];
+    let isEditMode = false;
+    function render() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.getElementById('cardList').innerHTML = budgetData.filter(i => i.name.toLowerCase().includes(q)).map((item, idx) => `
+            <div class="card ${isEditMode ? 'editing' : ''}">
+                <div class="card-title"><span class="view-ui">${item.name}</span><div class="edit-ui"><input type="text" value="${item.name}" onchange="budgetData[${idx}].name=this.value;render()"></div></div>
+                <div class="card-grid">
+                    <div><span class="val-label">Alloc</span><br><span class="val-amt view-ui">${item.alloc}</span><div class="edit-ui"><input type="number" value="${item.alloc}" onchange="budgetData[${idx}].alloc=Number(this.value);render()"></div></div>
+                    <div><span class="val-label">With</span><br><span class="val-amt view-ui">${item.with}</span><div class="edit-ui"><input type="number" value="${item.with}" onchange="budgetData[${idx}].with=Number(this.value);render()"></div></div>
+                    <div><span class="val-label">Bal</span><br><span class="val-amt">${item.alloc - item.with}</span></div>
+                </div>
+            </div>`).join('');
+        document.getElementById('totAlloc').innerText = budgetData.reduce((s,i)=>s+i.alloc,0);
+        document.getElementById('totWith').innerText = budgetData.reduce((s,i)=>s+i.with,0);
+        document.getElementById('totBal').innerText = budgetData.reduce((s,i)=>s+(i.alloc-i.with),0);
+    }
+    function toggleEdit(m) { isEditMode = m; document.getElementById('editBtn').style.display = m?'none':'block'; document.getElementById('saveBtn').style.display = m?'block':'none'; render(); }
+    function addNew() { budgetData.unshift({ code: "", name: "New Component", alloc: 0, with: 0 }); isEditMode = true; render(); }
+    render();
+</script>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-final-diary" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Diary Manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .full-width { grid-column: span 2; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color:white; }
+        .btn-add { background-color: #3498db; width: 100%; margin-bottom: 10px; }
+        .btn-download { background-color: #27ae60; width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Tour Diary Entry</h2>
+    <div class="form-grid">
+        <input type="date" id="date" required>
+        <input type="text" id="school" placeholder="School Name" class="full-width">
+        <textarea id="purpose" placeholder="Purpose of Visit" class="full-width">&lt;/textarea&gt;
+        <textarea id="workdone" placeholder="Work Done" class="full-width">&lt;/textarea&gt;
+    </div>
+    <button class="btn-add" onclick="addEntry()">+ Add Entry</button>
+    <table id="diaryTable"><thead><tr><th>Date</th><th>School</th><th>Purpose</th><th>Work Done</th></tr></thead><tbody></tbody></table>
+    <br><button class="btn-download" onclick="downloadPDF()">Download PDF</button>
+</div>
+<script>
+    function addEntry() {
+        const d = document.getElementById('date').value, s = document.getElementById('school').value, p = document.getElementById('purpose').value, w = document.getElementById('workdone').value;
+        if(!d || !s) return alert("Date and School required");
+        const tbody = document.querySelector('#diaryTable tbody');
+        tbody.innerHTML += `<tr><td>${d}</td><td>${s}</td><td>${p}</td><td>${w}</td></tr>`;
+    }
+    function downloadPDF() {
+        const doc = new window.jspdf.jsPDF(); doc.text("Tour Diary Report", 14, 20);
+        doc.autoTable({ html: '#diaryTable', startY: 30, headStyles: { fillColor: [44, 62, 80] } });
+        doc.save('Tour_Diary.pdf');
+    }
+</script>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-ifa" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Format 4A - CRCC Monthly Report</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f4; margin: 0; padding: 10px; }
+        .container { max-width: 950px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; border-top: 5px solid #00695c; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th, td { border: 1px solid #cfd8dc; padding: 8px; text-align: center; }
+        th { background-color: #eceff1; } input { width: 100%; padding: 6px; box-sizing: border-box; }
+        .section-title { background-color: #00695c; color: white; padding: 10px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 style="text-align:center; color:#00695c;">Format 4 A - Monthly IFA Report</h2>
+    <div class="section-title">I. IFA Consumption (Target & Consuming)</div>
+    <table>
+        <tr><th>Class</th><th>Target (Girls+Boys)</th><th>Consuming (Girls+Boys)</th></tr>
+        <tr><td>Class 1 to 5</td><td><input type="number" id="t1" oninput="calc()"></td><td><input type="number" id="c1" oninput="calc()"></td></tr>
+        <tr><td>Class 6 to 12</td><td><input type="number" id="t2" oninput="calc()"></td><td><input type="number" id="c2" oninput="calc()"></td></tr>
+        <tr><td><b>Coverage %</b></td><td><input type="text" id="cov1" readonly></td><td><input type="text" id="cov2" readonly></td></tr>
+    </table>
+    <script>
+        function calc() {
+            let t1 = Number(document.getElementById('t1').value), c1 = Number(document.getElementById('c1').value);
+            let t2 = Number(document.getElementById('t2').value), c2 = Number(document.getElementById('c2').value);
+            document.getElementById('cov1').value = t1 > 0 ? ((c1/t1)*100).toFixed(1) + '%' : '0%';
+            document.getElementById('cov2').value = t2 > 0 ? ((c2/t2)*100).toFixed(1) + '%' : '0%';
+        }
+    </script>
+</div>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-letter" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editable Official Letterhead - CRCC Anlakuda</title>
+<style>
+  body { font-family: 'Times New Roman', Times, serif; background-color: #e9ecef; display: flex; justify-content: center; padding: 20px; margin: 0; }
+  .page-container { width: 210mm; min-height: 297mm; background-color: #ffffff; padding: 25mm 20mm; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; position: relative; }
+  .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 25px; }
+  .office-title { font-size: 20px; font-weight: bold; color: #1a365d; margin: 8px 0; }
+  .dispatch-info { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 30px; }
+  .editable-area { font-size: 16px; line-height: 1.6; min-height: 120mm; outline: none; border: 1px dashed #ccc; padding: 15px; }
+  .footer { position: absolute; bottom: 30mm; right: 20mm; text-align: center; }
+</style>
+</head>
+<body>
+<div class="page-container">
+  <div class="header">
+    <div style="font-size:18px; font-weight:bold;">Government of Odisha</div>
+    <div class="office-title">OFFICE OF THE CLUSTER RESOURCE CENTRE COORDINATOR</div>
+    <div>Anlakuda Cluster, Block - Suliapada, Dist - Mayurbhanj</div>
+  </div>
+  <div class="dispatch-info">
+    <div>Letter No: <span contenteditable="true">_____</span></div>
+    <div>Date: <span contenteditable="true">DD/MM/YYYY</span></div>
+  </div>
+  <div class="editable-area" contenteditable="true">
+    <b>Subject:</b> <br><br>Sir/Madam,<br><br>
+  </div>
+  <div class="footer">
+    <div style="height:70px;"></div>
+    <strong>Mohan Kumar Behera</strong><br>CRCC, Anlakuda
+  </div>
+</div>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-live-db" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CRCC Anlakuda Smart Report</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .sheet-container { background: white; padding: 20px; border-radius: 8px; max-width: 1000px; margin: auto; }
+        h1 { color: #1e3a8a; text-align: center; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f8fafc; }
+    </style>
+</head>
+<body>
+    <div class="sheet-container">
+        <h1>Live Cluster Data</h1>
+        <table>
+            <thead><tr><th>Date</th><th>School Name</th><th>Status</th></tr></thead>
+            <tbody><tr><td colspan="3">Connected to Database - View Only UI Representation</td></tr></tbody>
+        </table>
+    </div>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-live-diary" class="hidden-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Embedded Google Sheet</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; padding:10px;}
+        iframe { width: 100%; height: 80vh; border: none; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScylioKPIkiztA0LISv5rztrB1-6L5TXwEm5UI8ebZm7D084w/viewform?embedded=true"></iframe>
+</body>
+</html>
+</textarea>
+
+<textarea id="app-notice" class="hidden-data">
+<!DOCTYPE html>
+<html lang="or">
+<head>
+<meta charset="UTF-8">
+<title>ଆଞ୍ଚଳିକ ସାଧନ କେନ୍ଦ୍ର – ଅଁଳାକୁଡ଼ା | Notice</title>
+<style>
+  body { background:#eef1f6; font-family:sans-serif; text-align:center; padding: 20px;}
+  .paper { background:#fff; padding:20px; max-width:600px; margin:auto; border: 3px solid #153f8c; }
+  .head { color: #0f3d8c; font-size:24px; font-weight:bold; }
+  .badge { display:inline-block; background:#0f3d8c; color:white; padding:10px 20px; margin:20px 0; font-size:20px; border-radius:20px;}
+  [contenteditable="true"] { outline: 1px dashed #ccc; padding: 5px; }
+</style>
+</head>
+<body>
+<div class="paper">
+  <div class="head" contenteditable="true">ଆଞ୍ଚଳିକ ସାଧନ କେନ୍ଦ୍ର – ଅଁଳାକୁଡ଼ା</div>
+  <div contenteditable="true">ଅଁଳାକୁଡ଼ା, ଶୁଳିଆପଦା, ମୟୁରଭଞ୍ଜ</div>
+  <div class="badge">NOTICE</div>
+  <div contenteditable="true" style="text-align:left; line-height: 2;">
+    ବିଷୟ: <br><br>
+    ସମସ୍ତ ପ୍ରଧାନଶିକ୍ଷକ/ପ୍ରଧାନଶିକ୍ଷୟିତ୍ରୀ ଏବଂ ସମସ୍ତ ଶିକ୍ଷକ/ଶିକ୍ଷୟିତ୍ରୀଙ୍କୁ ଜଣାଇ ଦିଆଯାଉଛି ଯେ...
+  </div>
+</div>
+</body>
+</html>
+</textarea>
+
+    <!-- App Logic -->
+    <script>
+        const body = document.body;
+        const dashboard = document.getElementById('dashboard');
+        const frame = document.getElementById('app-frame');
+        const backBtn = document.getElementById('back-btn');
+        const headerTitle = document.getElementById('header-title');
+        const searchBox = document.getElementById('search');
+
+        function openApp(textAreaId, title, fromHistory) {
+            body.classList.add('in-app');
+            headerTitle.innerText = title;
+            frame.srcdoc = document.getElementById(textAreaId).value;
+            if (!fromHistory) { try { history.pushState({app: textAreaId}, ''); } catch (e) {} }
+        }
+
+        function goHome(fromHistory) {
+            body.classList.remove('in-app');
+            headerTitle.innerText = 'CRCC Workspace';
+            frame.srcdoc = '';
+            if (fromHistory !== true) {
+                try { if (history.state && history.state.app) history.back(); } catch (e) {}
+            }
+        }
+
+        document.querySelectorAll('.tool').forEach(function (btn) {
+            btn.addEventListener('click', function () { openApp(btn.dataset.app, btn.dataset.title); });
+        });
+        backBtn.addEventListener('click', function () { goHome(); });
+        window.addEventListener('popstate', function () { if (body.classList.contains('in-app')) goHome(true); });
+
+        // Search
+        searchBox.addEventListener('input', function () {
+            const q = searchBox.value.trim().toLowerCase();
+            let shown = 0;
+            document.querySelectorAll('.group').forEach(function (g) {
+                let any = 0;
+                g.querySelectorAll('.tool').forEach(function (t) {
+                    const hay = (t.textContent + ' ' + (t.dataset.k || '')).toLowerCase();
+                    const hit = !q || hay.indexOf(q) !== -1;
+                    t.style.display = hit ? '' : 'none';
+                    if (hit) any++;
+                });
+                g.style.display = any ? '' : 'none';
+                shown += any;
+            });
+            document.getElementById('empty').style.display = shown ? 'none' : 'block';
+        });
+
+        // Today's date
+        document.getElementById('today').textContent =
+            new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · Suliapada Block, Mayurbhanj';
+    </script>
+</body>
+</html>
+<ALOASK-SEPARATE-EDITORS><ALOASK-SEPARATE-EDITORS>
